@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ProgressBar mLoadingProgress;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLoadingProgress = (ProgressBar) findViewById(R.id.pb_loading);
+        mLoadingProgress = findViewById(R.id.pb_loading);
 
         try {
             URL bookUrl = ApiUtil.buildUrl("cooking");
@@ -47,9 +48,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             mLoadingProgress.setVisibility(View.INVISIBLE);
-            TextView tvResult = (TextView) findViewById(R.id.tvResponse);
-            TextView tvError = (TextView) findViewById(R.id.tv_error);
-            tvResult.setText(result);
+            TextView tvResult = findViewById(R.id.tvResponse);
+            TextView tvError = findViewById(R.id.tv_error);
 
             if (result == null){
                 tvResult.setVisibility(View.INVISIBLE);
@@ -58,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
                 tvResult.setVisibility(View.VISIBLE);
                 tvError.setVisibility(View.INVISIBLE);
             }
+            ArrayList<Book> books = ApiUtil.getBooksFromJson(result);
+            String resultString = "";
+            for (Book book : books) {
+                resultString = resultString + book.title + "\n" + book.publishedDate + "\n\n";
+            }
+            tvResult.setText(resultString);
         }
 
         @Override
