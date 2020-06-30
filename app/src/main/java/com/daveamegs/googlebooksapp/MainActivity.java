@@ -1,6 +1,8 @@
 package com.daveamegs.googlebooksapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,12 +17,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ProgressBar mLoadingProgress;
+    private RecyclerView rvBooks;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mLoadingProgress = findViewById(R.id.pb_loading);
+        rvBooks = findViewById(R.id.rv_books);
+        LinearLayoutManager BooksLayoutManager = new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false);
+        rvBooks.setLayoutManager(BooksLayoutManager);
 
         try {
             URL bookUrl = ApiUtil.buildUrl("cooking");
@@ -48,22 +55,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             mLoadingProgress.setVisibility(View.INVISIBLE);
-            TextView tvResult = findViewById(R.id.tvResponse);
             TextView tvError = findViewById(R.id.tv_error);
 
             if (result == null){
-                tvResult.setVisibility(View.INVISIBLE);
+                rvBooks.setVisibility(View.INVISIBLE);
                 tvError.setVisibility(View.VISIBLE);
             }else {
-                tvResult.setVisibility(View.VISIBLE);
+                rvBooks.setVisibility(View.VISIBLE);
                 tvError.setVisibility(View.INVISIBLE);
             }
             ArrayList<Book> books = ApiUtil.getBooksFromJson(result);
             String resultString = "";
-            for (Book book : books) {
-                resultString = resultString + book.title + "\n" + book.publishedDate + "\n\n";
-            }
-            tvResult.setText(resultString);
+
+            BooksAdapter adapter = new BooksAdapter(books);
+            rvBooks.setAdapter(adapter);
         }
 
         @Override
