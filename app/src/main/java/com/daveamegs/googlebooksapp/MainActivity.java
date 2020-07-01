@@ -1,21 +1,25 @@
 package com.daveamegs.googlebooksapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private ProgressBar mLoadingProgress;
     private RecyclerView rvBooks;
     @Override
@@ -38,6 +42,33 @@ public class MainActivity extends AppCompatActivity {
             Log.d("error", e.getMessage());
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.book_list_menu, menu);
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        try {
+            URL bookUrl = ApiUtil.buildUrl(s);
+            new BooksQueryTask().execute(bookUrl);
+        } catch (Exception e) {
+            Log.d("Error", e.getMessage());
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        return false;
+    }
+
     public class BooksQueryTask extends AsyncTask<URL, Void, String> {
 
         @Override
