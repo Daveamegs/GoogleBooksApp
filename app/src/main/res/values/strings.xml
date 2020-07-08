@@ -2,4 +2,10 @@
     <string name="app_name">Google Books App</string>
     <string name="error_msg">Error Loading query from google books</string>
     <string name="search">Search</string>
+    <string name="hint_title">Insert Title</string>
+    <string name="hint_authors">Insert Authors(s)</string>
+    <string name="hint_publisher">Insert Publisher</string>
+    <string name="hint_isbn">Insert ISBN</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="no_search_data">Please Insert a Valid Search Info</string>
 </resources>

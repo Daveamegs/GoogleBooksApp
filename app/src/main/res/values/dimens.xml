@@ -2,4 +2,7 @@
 <resources>
     <dimen name="textsize_tilte">20sp</dimen>
     <dimen name="textsize_authors">18sp</dimen>
+    <dimen name="standard_margin">8dp</dimen>
+    <dimen name="margin_search_activity">24dp</dimen>
+    <dimen name="search_button_text_size">18sp</dimen>
 </resources>

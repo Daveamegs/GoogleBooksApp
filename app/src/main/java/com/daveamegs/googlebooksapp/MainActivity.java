@@ -1,10 +1,12 @@
 package com.daveamegs.googlebooksapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -33,10 +36,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 LinearLayoutManager.VERTICAL, false);
         rvBooks.setLayoutManager(BooksLayoutManager);
 
-        try {
-            URL bookUrl = ApiUtil.buildUrl("cooking");
-            new BooksQueryTask().execute(bookUrl);
+        Intent intent = getIntent();
+        String query = intent.getStringExtra("Query");
+        URL bookUrl;
 
+        try {
+            if (query == null || query.isEmpty()) {
+                bookUrl = ApiUtil.buildUrl("android");
+            } else {
+                bookUrl = new URL(query);
+            }
+            new BooksQueryTask().execute(bookUrl);
         }
         catch (Exception e) {
             Log.d("error", e.getMessage());
@@ -50,6 +60,19 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         final SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(this);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_advance_search:
+                Intent intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
     @Override
@@ -94,12 +117,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }else {
                 rvBooks.setVisibility(View.VISIBLE);
                 tvError.setVisibility(View.INVISIBLE);
-            }
-            ArrayList<Book> books = ApiUtil.getBooksFromJson(result);
-            String resultString = "";
+                ArrayList<Book> books = ApiUtil.getBooksFromJson(result);
+                String resultString = "";
 
-            BooksAdapter adapter = new BooksAdapter(books);
-            rvBooks.setAdapter(adapter);
+                BooksAdapter adapter = new BooksAdapter(books);
+                rvBooks.setAdapter(adapter);
+            }
+
         }
 
         @Override
